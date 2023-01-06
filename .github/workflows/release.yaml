@@ -22,6 +22,8 @@ jobs:
           go-version: ${{ steps.version.outputs.go_version }}
       - name: Build geoip
         id: build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: go run -v .
       - name: Generate sha256 hash
         if: steps.build.outputs.skip != 'true'

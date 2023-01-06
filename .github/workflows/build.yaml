@@ -23,6 +23,7 @@ jobs:
       - name: Build geoip
         id: build
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NO_SKIP: true
         run: go run -v .
       - name: Upload artifacts

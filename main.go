@@ -9,7 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/google/go-github/v45/github"
+	"github.com/google/go-github/v49/github"
+	"golang.org/x/oauth2"
 	"github.com/maxmind/mmdbwriter"
 	"github.com/maxmind/mmdbwriter/inserter"
 	"github.com/maxmind/mmdbwriter/mmdbtype"
@@ -26,7 +27,13 @@ var githubClient *github.Client
 func init() {
 	accessToken, loaded := os.LookupEnv("ACCESS_TOKEN")
 	if !loaded {
-		githubClient = github.NewClient(nil)
+		githubToken, _ := os.LookupEnv("GITHUB_TOKEN")
+		ctx := context.Background()
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: githubToken},
+		)
+		tc := oauth2.NewClient(ctx, ts)
+		githubClient = github.NewClient(tc)
 		return
 	}
 	transport := &github.BasicAuthTransport{
