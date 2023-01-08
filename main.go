@@ -230,15 +230,24 @@ func release(source string, destination string) error {
 	if err != nil {
 		return err
 	}
+	err = setActionOutput("tag", *sourceRelease.Name)
 	if err != nil {
 		return err
 	}
-	setActionOutput("tag", *sourceRelease.Name)
 	return nil
 }
 
-func setActionOutput(name string, content string) {
-	os.Stdout.WriteString("::set-output name=" + name + "::" + content + "\n")
+func setActionOutput(name string, content string) error {
+	file, err := os.OpenFile(os.Getenv("GITHUB_OUTPUT"), os.O_APPEND|os.O_WRONLY, 0666)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	_, err = file.WriteString(name + "=" + content + "\n")
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func main() {
