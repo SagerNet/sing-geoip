@@ -238,7 +238,7 @@ func setActionOutput(name string, content string) {
 func main() {
 	var err error
 	if len(os.Args) >= 3 {
-		err = local(os.Args[1], os.Args[2], os.Args[2:])
+		err = local(os.Args[1], os.Args[2], os.Args[3:])
 	} else {
 		err = release("Dreamacro/maxmind-geoip", "sagernet/sing-geoip")
 	}
