@@ -28,6 +28,11 @@ jobs:
         run: |
           sha256sum geoip.db > geoip.db.sha256sum
           sha256sum geoip-cn.db > geoip-cn.db.sha256sum
+      - uses: dev-drprasad/delete-older-releases@v0.3.2
+        with:
+          keep_latest: 3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create a release
         if: steps.build.outputs.skip != 'true'
         id: create_release
