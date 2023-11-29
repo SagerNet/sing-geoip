@@ -30,8 +30,3 @@ jobs:
         with:
           name: geoip.db
           path: geoip.db
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: geoip-cn.db
-          path: geoip-cn.db

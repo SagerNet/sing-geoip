@@ -2,3 +2,4 @@
 /vendor/
 /*.db
 *.mmdb
+/rule-set/
