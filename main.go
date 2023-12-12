@@ -10,18 +10,19 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/google/go-github/v45/github"
-	"github.com/maxmind/mmdbwriter"
-	"github.com/maxmind/mmdbwriter/inserter"
-	"github.com/maxmind/mmdbwriter/mmdbtype"
-	"github.com/oschwald/geoip2-golang"
-	"github.com/oschwald/maxminddb-golang"
 	"github.com/sagernet/sing-box/common/srs"
 	C "github.com/sagernet/sing-box/constant"
 	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing/common"
 	E "github.com/sagernet/sing/common/exceptions"
+
+	"github.com/google/go-github/v45/github"
+	"github.com/maxmind/mmdbwriter"
+	"github.com/maxmind/mmdbwriter/inserter"
+	"github.com/maxmind/mmdbwriter/mmdbtype"
+	"github.com/oschwald/geoip2-golang"
+	"github.com/oschwald/maxminddb-golang"
 )
 
 var githubClient *github.Client
@@ -189,11 +190,21 @@ func release(source string, destination string, output string, ruleSetOutput str
 	for code := range countryMap {
 		allCodes = append(allCodes, code)
 	}
+
 	writer, err := newWriter(metadata, allCodes)
 	if err != nil {
 		return err
 	}
 	err = write(writer, countryMap, output, nil)
+	if err != nil {
+		return err
+	}
+
+	writer, err = newWriter(metadata, []string{"cn"})
+	if err != nil {
+		return err
+	}
+	err = write(writer, countryMap, "geoip-cn.db", []string{"cn"})
 	if err != nil {
 		return err
 	}
@@ -229,6 +240,7 @@ func release(source string, destination string, output string, ruleSetOutput str
 		}
 		outputRuleSet.Close()
 	}
+
 	setActionOutput("tag", *sourceRelease.Name)
 	return nil
 }

@@ -32,9 +32,15 @@ jobs:
         if: steps.build.outputs.skip != 'true'
         run: |
           sha256sum geoip.db > geoip.db.sha256sum
+          sha256sum geoip-cn.db > geoip-cn.db.sha256sum
+      - name: Release release branch
+        if: steps.build.outputs.skip != 'true'
+        run: .github/release-branch.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: dev-drprasad/delete-older-releases@v0.3.2
         with:
-          keep_latest: 10
+          keep_latest: 3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release geoip
@@ -45,3 +51,5 @@ jobs:
           files: |
             geoip.db
             geoip.db.sha256sum
+            geoip-cn.db
+            geoip-cn.db.sha256sum
