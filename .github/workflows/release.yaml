@@ -1,6 +1,9 @@
 name: Release
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "The tag version you want to build"
   schedule:
     - cron: "0 8 12 * *"
 jobs:
@@ -19,6 +22,8 @@ jobs:
       - name: Build geoip
         id: build
         run: go run -v .
+        env:
+          FIXED_RELEASE: ${{ github.event.inputs.tag }}
       - name: Release rule sets
         if: steps.build.outputs.skip != 'true'
         run: .github/release-rule-set.sh

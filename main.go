@@ -10,19 +10,18 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/sagernet/sing-box/common/srs"
-	C "github.com/sagernet/sing-box/constant"
-	"github.com/sagernet/sing-box/log"
-	"github.com/sagernet/sing-box/option"
-	"github.com/sagernet/sing/common"
-	E "github.com/sagernet/sing/common/exceptions"
-
 	"github.com/google/go-github/v45/github"
 	"github.com/maxmind/mmdbwriter"
 	"github.com/maxmind/mmdbwriter/inserter"
 	"github.com/maxmind/mmdbwriter/mmdbtype"
 	"github.com/oschwald/geoip2-golang"
 	"github.com/oschwald/maxminddb-golang"
+	"github.com/sagernet/sing-box/common/srs"
+	C "github.com/sagernet/sing-box/constant"
+	"github.com/sagernet/sing-box/log"
+	"github.com/sagernet/sing-box/option"
+	"github.com/sagernet/sing/common"
+	E "github.com/sagernet/sing/common/exceptions"
 )
 
 var githubClient *github.Client
@@ -40,12 +39,21 @@ func init() {
 }
 
 func fetch(from string) (*github.RepositoryRelease, error) {
+	fixedRelease := os.Getenv("FIXED_RELEASE")
 	names := strings.SplitN(from, "/", 2)
-	latestRelease, _, err := githubClient.Repositories.GetLatestRelease(context.Background(), names[0], names[1])
-	if err != nil {
-		return nil, err
+	if fixedRelease != "" {
+		latestRelease, _, err := githubClient.Repositories.GetReleaseByTag(context.Background(), names[0], names[1], fixedRelease)
+		if err != nil {
+			return nil, err
+		}
+		return latestRelease, err
+	} else {
+		latestRelease, _, err := githubClient.Repositories.GetLatestRelease(context.Background(), names[0], names[1])
+		if err != nil {
+			return nil, err
+		}
+		return latestRelease, err
 	}
-	return latestRelease, err
 }
 
 func get(downloadURL *string) ([]byte, error) {
