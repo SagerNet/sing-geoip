@@ -91,8 +91,13 @@ func parse(binary []byte) (metadata maxminddb.Metadata, countryMap map[string][]
 		if err != nil {
 			return
 		}
-		// idk why
-		code := strings.ToLower(country.RegisteredCountry.IsoCode)
+		code := strings.ToLower(country.Country.IsoCode)
+		if code == "" {
+		    code = strings.ToLower(country.RegisteredCountry.IsoCode)
+		}
+		if code == "" {
+		    continue
+		}
 		countryMap[code] = append(countryMap[code], ipNet)
 	}
 	err = networks.Err()
